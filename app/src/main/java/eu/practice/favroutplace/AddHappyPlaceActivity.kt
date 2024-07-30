@@ -5,6 +5,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -24,10 +26,15 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import eu.practice.favroutplace.databinding.ActivityAddHappyPlaceBinding
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
+import java.sql.Wrapper
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -96,6 +103,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     val contentUri = data.data
                     try {
                         val selectedImage = MediaStore.Images.Media.getBitmap(this.contentResolver,contentUri)
+                        saveImageToInternalStorage(selectedImage)
+
                         binding.ivPlaceImage.setImageBitmap(selectedImage)
                     }catch (e: IOException){
                         e.printStackTrace()
@@ -105,6 +114,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
             } else if( requestCode == CAMERA_REQUEST_CODE ){
 
                 val thumbNail : Bitmap = data!!.extras!!.get("data") as Bitmap
+
+                saveImageToInternalStorage(thumbNail)
                 binding.ivPlaceImage.setImageBitmap(thumbNail)
             }
         }
@@ -196,10 +207,30 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun saveImageToInternalStorage(bitmap: Bitmap): Uri {
+        val contextWrapper = ContextWrapper(applicationContext)
+        var file = contextWrapper.getDir(IMAGE_DIRECTORY , Context.MODE_PRIVATE )
+        file = File(file,"${UUID.randomUUID()}.jpg")
+
+        try {
+            val stream :OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG , 100 ,stream)
+            stream.flush()
+            stream.close()
+
+
+        }catch (e:IOException){
+            e.printStackTrace()
+        }
+
+       return Uri.parse(file.absolutePath)
+    }
+
     companion object{
         private const val GALLERY = 1
         private const val CAMERA_PERMISSION_CODE = 1
         private const val CAMERA_REQUEST_CODE = 2
+        private const val IMAGE_DIRECTORY = "HAPPY PLACE IMAGES"
 
     }
 
