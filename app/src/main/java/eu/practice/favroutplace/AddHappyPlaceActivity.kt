@@ -110,24 +110,20 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun takePhotoFromCamera(){
-        if (
-            ContextCompat.checkSelfPermission(
-                this ,
-                Manifest.permission.CAMERA,
-            ) == PackageManager.PERMISSION_GRANTED
-        ){
+
+
+    private fun takePhotoFromCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(intent, CAMERA_REQUEST_CODE)
-        }else{
+        } else {
             ActivityCompat.requestPermissions(
-                this ,
+                this,
                 arrayOf(Manifest.permission.CAMERA),
                 CAMERA_PERMISSION_CODE
             )
         }
     }
-
     private fun choosePhotoFromGallery() {
 
         Dexter.withActivity(this)
@@ -194,7 +190,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }else{
-                Toast.makeText(this , "Oops you denied the permission" , Toast.LENGTH_LONG).show()
+                    showRationalDialogForPermission()
+
             }
         }
     }
