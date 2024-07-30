@@ -1,4 +1,4 @@
-package eu.practice.favroutplace
+package eu.practice.favroutplace.activities
 
 import android.Manifest
 import android.app.Activity
@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
-import android.widget.Gallery
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,12 +24,14 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import eu.practice.favroutplace.R
+import eu.practice.favroutplace.database.DatabaseHandler
 import eu.practice.favroutplace.databinding.ActivityAddHappyPlaceBinding
+import eu.practice.favroutplace.models.HappyPlaceModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.sql.Wrapper
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -42,6 +43,9 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
 
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
+    private var saveImageToInternalStorage : Uri ? = null
+    private var mLatitude  :Double  = 0.0
+    private var mLongitude :Double  = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,10 +64,16 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             updateDateInView()
         }
+            updateDateInView()
 
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this) // Ensure the click listener is set for the TextView
         binding.ivPlaceImage.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
+        binding.etTitle.setOnClickListener(this)
+        binding.etDescription.setOnClickListener(this)
+        binding.etLocation.setOnClickListener(this)
+
     }
 
     override fun onClick(v: View?) {
@@ -75,9 +85,9 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
                     cal.get(Calendar.DAY_OF_MONTH)
-                ).show()
-            }
-             R.id.tv_add_image -> {
+                        ).show()
+                       }
+            R.id.tv_add_image -> {
                 val pictureDialog = AlertDialog.Builder(this)
                 pictureDialog.setTitle("Select Action")
                 val pictureDialogItems = arrayOf(
@@ -88,9 +98,47 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     when (which) {
                         0 -> { choosePhotoFromGallery() }
                         1 -> { takePhotoFromCamera() }
+                     }
+                 }
+                    pictureDialog.show()
+                }
+            R.id.btn_save -> {
+                when {
+                    binding.etTitle.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please Enter title ", Toast.LENGTH_LONG).show()
+                    }
+
+                    binding.etDescription.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please Enter Description", Toast.LENGTH_LONG).show()
+                    }
+
+                    binding.etLocation.text.isNullOrEmpty() -> {
+                        Toast.makeText(this, "Please Enter Location", Toast.LENGTH_LONG).show()
+                    }
+                    saveImageToInternalStorage == null -> {
+                        Toast.makeText(this, "Please Select the Image", Toast.LENGTH_LONG).show()
+                    }
+
+                    else -> {
+                            val happyPlaceModel = HappyPlaceModel(
+                                0,
+                                binding.etTitle.text.toString(),
+                                binding.ivPlaceImage.toString(),
+                                binding.etDescription.text.toString(),
+                                binding.etDate.text.toString(),
+                                binding.etLocation.text.toString(),
+                                mLatitude,
+                                mLongitude
+                            )
+                        val dbHandler = DatabaseHandler(this)
+                        val addHappyPlace = dbHandler.addHappyPLace(happyPlaceModel)
+                        if (addHappyPlace > 0){
+                            Toast.makeText(this, "The Happy Place details are inserted successfully", Toast.LENGTH_SHORT).show()
+                            finish()
+
+                        }
                     }
                 }
-                pictureDialog.show()
             }
         }
     }
@@ -103,7 +151,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     val contentUri = data.data
                     try {
                         val selectedImage = MediaStore.Images.Media.getBitmap(this.contentResolver,contentUri)
-                        saveImageToInternalStorage(selectedImage)
+                         saveImageToInternalStorage = saveImageToInternalStorage(selectedImage)
 
                         binding.ivPlaceImage.setImageBitmap(selectedImage)
                     }catch (e: IOException){
@@ -114,8 +162,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
             } else if( requestCode == CAMERA_REQUEST_CODE ){
 
                 val thumbNail : Bitmap = data!!.extras!!.get("data") as Bitmap
+                saveImageToInternalStorage = saveImageToInternalStorage(thumbNail)
 
-                saveImageToInternalStorage(thumbNail)
                 binding.ivPlaceImage.setImageBitmap(thumbNail)
             }
         }

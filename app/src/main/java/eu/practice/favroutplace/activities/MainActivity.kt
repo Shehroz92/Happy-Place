@@ -1,10 +1,11 @@
-package eu.practice.favroutplace
+package eu.practice.favroutplace.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import eu.practice.favroutplace.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         addBtn!!.setOnClickListener {
-            val intent = Intent(this ,AddHappyPlaceActivity::class.java)
+            val intent = Intent(this , AddHappyPlaceActivity::class.java)
             startActivity(intent)
         }
     }
