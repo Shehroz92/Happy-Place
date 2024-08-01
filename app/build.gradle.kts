@@ -40,6 +40,10 @@ android {
 
 dependencies {
 
+
+    implementation ("com.github.bumptech.glide:glide:4.11.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.karumi:dexter:6.0.1")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

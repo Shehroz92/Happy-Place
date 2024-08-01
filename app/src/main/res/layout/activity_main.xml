@@ -7,14 +7,42 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_happy_place"
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:orientation="vertical"
+       >
+       <androidx.appcompat.widget.Toolbar
+           android:id="@+id/toolbar_happy_place"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:background="#009688"
+           app:title="FAVORITE PLACE"
+           app:titleTextColor="@color/white"
+           />
+
+          <androidx.recyclerview.widget.RecyclerView
+              android:id="@+id/rv_happy_places_list"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:visibility="gone"
+              tools:visibility="gone"
+              />
+
+
+   </LinearLayout>
+
+    <TextView
+        android:id="@+id/no_records_availabe"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#2196F3"
-        app:title="FAVORITE PLACE"
-        app:titleTextColor="@color/white"
-       />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No Happy Place Found Yet ,Kindly Add One."
+        android:textSize="16sp"
+        android:visibility="visible"
+        tools:visibility="visible"
+        />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddHappyPlace"
@@ -25,5 +53,7 @@
         app:srcCompat="@drawable/baseline_add_24"
         android:backgroundTint="#2196F3"
         />
+
+
 
 </FrameLayout>

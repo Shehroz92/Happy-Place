@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -107,36 +108,33 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     binding.etTitle.text.isNullOrEmpty() -> {
                         Toast.makeText(this, "Please Enter title ", Toast.LENGTH_LONG).show()
                     }
-
                     binding.etDescription.text.isNullOrEmpty() -> {
                         Toast.makeText(this, "Please Enter Description", Toast.LENGTH_LONG).show()
                     }
-
                     binding.etLocation.text.isNullOrEmpty() -> {
                         Toast.makeText(this, "Please Enter Location", Toast.LENGTH_LONG).show()
                     }
                     saveImageToInternalStorage == null -> {
                         Toast.makeText(this, "Please Select the Image", Toast.LENGTH_LONG).show()
                     }
-
                     else -> {
-                            val happyPlaceModel = HappyPlaceModel(
-                                0,
-                                binding.etTitle.text.toString(),
-                                binding.ivPlaceImage.toString(),
-                                binding.etDescription.text.toString(),
-                                binding.etDate.text.toString(),
-                                binding.etLocation.text.toString(),
-                                mLatitude,
-                                mLongitude
-                            )
+                        val happyPlaceModel = HappyPlaceModel(
+                            0,
+                            binding.etTitle.text.toString(),
+                            saveImageToInternalStorage.toString(),
+                            binding.etDescription.text.toString(),
+                            binding.etDate.text.toString(),
+                            binding.etLocation.text.toString(),
+                            mLatitude,
+                            mLongitude
+                        )
+
                         val dbHandler = DatabaseHandler(this)
                         val addHappyPlace = dbHandler.addHappyPLace(happyPlaceModel)
-                        if (addHappyPlace > 0){
-                            Toast.makeText(this, "The Happy Place details are inserted successfully", Toast.LENGTH_SHORT).show()
+                        Log.d("AddHappyPlaceActivity", "Insert Result: $addHappyPlace")
+                            setResult(Activity.RESULT_OK)
                             finish()
 
-                        }
                     }
                 }
             }
@@ -151,9 +149,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                     val contentUri = data.data
                     try {
                         val selectedImage = MediaStore.Images.Media.getBitmap(this.contentResolver,contentUri)
+                         binding.ivPlaceImage.setImageBitmap(selectedImage)
                          saveImageToInternalStorage = saveImageToInternalStorage(selectedImage)
-
-                        binding.ivPlaceImage.setImageBitmap(selectedImage)
                     }catch (e: IOException){
                         e.printStackTrace()
                         Toast.makeText(this, "Failed to load the image from the gallery", Toast.LENGTH_LONG).show()
@@ -162,9 +159,8 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
             } else if( requestCode == CAMERA_REQUEST_CODE ){
 
                 val thumbNail : Bitmap = data!!.extras!!.get("data") as Bitmap
-                saveImageToInternalStorage = saveImageToInternalStorage(thumbNail)
-
                 binding.ivPlaceImage.setImageBitmap(thumbNail)
+                saveImageToInternalStorage = saveImageToInternalStorage(thumbNail)
             }
         }
     }
