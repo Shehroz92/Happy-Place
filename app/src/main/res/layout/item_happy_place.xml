@@ -58,6 +58,13 @@
                     tools:text="Description"
                     android:textSize="16sp"
                     android:textColor="@color/black"/>
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Location"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"/>
 
 
 

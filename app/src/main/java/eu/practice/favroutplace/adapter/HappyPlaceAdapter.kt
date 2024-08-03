@@ -21,6 +21,7 @@ open class HappyPlaceAdapter(
         val ivPlaceImage: ImageView = view.findViewById(R.id.iv_place_image_recycler)
         val tvTitle: TextView = view.findViewById(R.id.tv_title)
         val tvDescription: TextView = view.findViewById(R.id.tv_description)
+        val tv_location :TextView = view.findViewById(R.id.tv_location)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -39,6 +40,7 @@ open class HappyPlaceAdapter(
         holder.ivPlaceImage.setImageURI(Uri.parse(model.image))
         holder.tvTitle.text = model.title
         holder.tvDescription.text = model.description
+        holder.tv_location.text =  model.location
     }
 
     override fun getItemCount(): Int {
