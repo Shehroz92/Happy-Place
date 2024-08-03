@@ -18,11 +18,11 @@ import eu.practice.favroutplace.models.HappyPlaceModel
 
 class MainActivity : AppCompatActivity() {
 
-
     private var addBtn: FloatingActionButton? = null
     private var toolbar: Toolbar? = null
     private var rvHappyPlacesList: RecyclerView? = null
     private lateinit var noRecordsAvailable: TextView
+    private lateinit var placesAdapter: HappyPlaceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,21 +37,27 @@ class MainActivity : AppCompatActivity() {
 
         addBtn!!.setOnClickListener {
             val intent = Intent(this, AddHappyPlaceActivity::class.java)
-            startActivityForResult(intent , ADD_PLACE_ACTIVITY_REQUEST_CODE)
+            startActivityForResult(intent, ADD_PLACE_ACTIVITY_REQUEST_CODE)
         }
+
+        // Initialize the adapter with an empty list
+        placesAdapter = HappyPlaceAdapter(this, ArrayList())
+        rvHappyPlacesList!!.layoutManager = LinearLayoutManager(this)
+        rvHappyPlacesList!!.adapter = placesAdapter
+
         getHappyPlaceListFromLocalDb()
     }
 
     private fun setupHappyPlacesRecyclerView(happyPlaceList: ArrayList<HappyPlaceModel>) {
-        rvHappyPlacesList!!.layoutManager = LinearLayoutManager(this)
-        val placesAdapter = HappyPlaceAdapter(this, happyPlaceList)
-        rvHappyPlacesList!!.adapter = placesAdapter
+        Log.d("MainActivity", "Setting up RecyclerView with list size: ${happyPlaceList.size}")
+        placesAdapter.setList(happyPlaceList)
+        placesAdapter.notifyDataSetChanged()
     }
 
     private fun getHappyPlaceListFromLocalDb() {
         val dbHandler = DatabaseHandler(this)
         val getHappyPlaceList: ArrayList<HappyPlaceModel> = dbHandler.getHappyPlaceList()
-        Log.d("MainActivity", "HappyPlaceList size: ${getHappyPlaceList.size}")
+        Log.d("MainActivity", "HappyPlaceList size from DB: ${getHappyPlaceList.size}")
 
         if (getHappyPlaceList.size > 0) {
             rvHappyPlacesList!!.visibility = View.VISIBLE
@@ -65,16 +71,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ADD_PLACE_ACTIVITY_REQUEST_CODE){
-            if (resultCode == Activity.RESULT_OK ){
+        if (requestCode == ADD_PLACE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
                 getHappyPlaceListFromLocalDb()
-            }else{
-                Log.e("Activity" ,"Cancelled or back Pressed")
+            } else {
+                Log.e("MainActivity", "Cancelled or back pressed")
             }
         }
     }
-    companion object{
-       var ADD_PLACE_ACTIVITY_REQUEST_CODE = 1
-    }
 
+    companion object {
+        var ADD_PLACE_ACTIVITY_REQUEST_CODE = 1
+    }
 }

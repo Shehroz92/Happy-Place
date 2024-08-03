@@ -130,7 +130,7 @@ class AddHappyPlaceActivity : AppCompatActivity(), View.OnClickListener {
                         )
 
                         val dbHandler = DatabaseHandler(this)
-                        val addHappyPlace = dbHandler.addHappyPLace(happyPlaceModel)
+                        val addHappyPlace = dbHandler.addHappyPlace(happyPlaceModel)
                         Log.d("AddHappyPlaceActivity", "Insert Result: $addHappyPlace")
                             setResult(Activity.RESULT_OK)
                             finish()
